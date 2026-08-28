@@ -120,7 +120,7 @@ a{color:#7ea2ff}
   </div>
   <button class="bigbtn" onclick="startDeck()">🎴 Practice Flashcards</button>
   <button class="bigbtn gold" onclick="startSim()">🏛️ Take a Test Sim (20 Qs)</button>
-  <button class="bigbtn alt" onclick="showTab('weak')">🎯 Drill my weak spots</button>
+  <button class="bigbtn alt" onclick="startWeakDrill()">🎯 Drill my weak spots</button>
   <div class="muted">The real test: <b>20 of 128</b> questions asked orally · get <b>12 right</b> to pass · it stops at 12 ✓ or 9 ✗.<br>Not sure of an answer? Say any one of the listed answers — alternatives count!</div>
 </div>
 
@@ -282,6 +282,13 @@ function grade(g){
   deckPos++; renderDeck();
 }
 function endDeck(){ showTab('home') }
+function startWeakDrill(){
+  const weak = pool().filter(q=>{ const m=mastery(q.num); return m>=0 && m<.8; });
+  if(!weak.length){ toast('No weak spots — everything looks solid! 💪'); return; }
+  for(let i=weak.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[weak[i],weak[j]]=[weak[j],weak[i]]}
+  deckQueue = weak.slice(0,30).map(q=>q.num);
+  deckPos=0; showTab('deck'); renderDeck(); toast('Drilling '+deckQueue.length+' weak cards 🎯');
+}
 function shuffleDeck(){
   const fx=document.getElementById('shufflefx'); fx.classList.add('show');
   for(let i=deckQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deckQueue[i],deckQueue[j]]=[deckQueue[j],deckQueue[i]]}
